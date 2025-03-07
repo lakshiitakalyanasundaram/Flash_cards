@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:,">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="upload-section">
+        <label for="grade">Enter your grade:</label>
+        <input type="text" id="grade" placeholder="Grade (e.g., 9)">
+
+        <label for="subject">Select subject:</label>
+        <select id="subject">
+            <option value="1">Biology</option>
+            <option value="2">Chemistry</option>
+        </select>
+
+        <label for="chapter">Enter chapter number:</label>
+        <input type="text" id="chapter" placeholder="Chapter number">
+
+        <label for="num-cards">Enter number of flashcards:</label>
+        <input type="number" id="num-cards" placeholder="Number of cards">
+
+        <button id="generate-btn">Generate Flashcards</button>
+    </div>
+
+    <div class="flashcards-container">
+        <div id="flashcard" class="flashcard">
+            <!-- Flashcards will be shown here -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
