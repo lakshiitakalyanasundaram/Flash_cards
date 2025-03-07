@@ -5,7 +5,7 @@ import fitz  # PyMuPDF for PDF text extraction
 import google.generativeai as genai
 
 # Configure Gemini API
-api_key = "AIzaSyBLbit4NN5_kQGE5ykQrVb8rUi1fdzrMBQY"  # Replace with your actual key
+api_key = "AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY"  # Replace with your actual key
 genai.configure(api_key=api_key)
 
 app = Flask(__name__)

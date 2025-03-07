@@ -1,4 +1,13 @@
-const backendUrl = "http://127.0.0.1:5000/generate_flashcards"; // Replace with your machine's IP
+let backendUrl;
+
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    backendUrl = "http://127.0.0.1:5000/generate_flashcards"; // For local access
+} else {
+    backendUrl = "http://10.3.154.18:5000/generate_flashcards"; // For network access
+}
+
+console.log("Backend URL:", backendUrl);
+
 
 document.getElementById("generate-btn").addEventListener("click", generateFlashcards);
 

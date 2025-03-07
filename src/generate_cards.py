@@ -3,7 +3,7 @@ import fitz  # PyMuPDF for PDF text extraction
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBLbit4NN5_kQGE5ykQrVb8rUi1fdzrMBQY")
+genai.configure(api_key="AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY")
 
 def extract_text_from_pdf(pdf_path):
     text = ""
@@ -12,9 +12,23 @@ def extract_text_from_pdf(pdf_path):
             text += page.get_text()
     return text
 
-def generate_flashcards(text):
-    model = genai.GenerativeModel("gemini-pro")
-    prompt = f"Generate flashcards in question-answer format from the following text:\n{text}"
+def extract_topics(text):
+    # A simple approach to extract major topics from the text
+    # This could be enhanced with NLP techniques or pattern recognition
+    topics = []
+    lines = text.split('\n')
+    for line in lines:
+        if line.strip().endswith(":"):  # assuming topics end with a colon
+            topics.append(line.strip())
+    return topics
+
+def generate_flashcards(text, num_cards, topics):
+    model = genai.GenerativeModel("gemini-2.0-flash-lite")
+    
+    # Ensure the number of cards is at least the number of topics
+    num_cards = max(num_cards, len(topics))  # At least one flashcard per topic
+    
+    prompt = f"Generate {num_cards} flashcards in question-answer format from the following text:\n{text}"
     response = model.generate_content(prompt)
     return response.text
 
@@ -79,9 +93,23 @@ def main():
     print(f"\n📂 Extracting text from {pdf_filename}...")
     extracted_text = extract_text_from_pdf(pdf_path)
 
+    # Extract topics to ensure coverage
+    topics = extract_topics(extracted_text)
+
+    # Ask the user for the number of flashcards to generate
+    try:
+        num_cards = int(input("\nEnter the number of flashcards you want: ").strip())
+    except ValueError:
+        print("❌ Invalid number entered!")
+        return
+
+    # If the number of requested cards is less than the number of topics, ensure coverage
+    if num_cards < len(topics):
+        print(f"⚠️ Warning: You requested {num_cards} flashcards, but there are {len(topics)} topics. At least {len(topics)} flashcards will be generated to cover all topics.")
+
     # Generate flashcards from the extracted text
     print("\n📝 Generating flashcards...")
-    flashcards = generate_flashcards(extracted_text)
+    flashcards = generate_flashcards(extracted_text, num_cards, topics)
     print("Generated Flashcards:\n", flashcards)
 
 if __name__ == "__main__":
