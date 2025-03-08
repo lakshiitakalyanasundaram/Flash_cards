@@ -1,0 +1,7 @@
+flask                       # Web framework (if using Flask)
+flask-cors                  # Enable CORS for frontend-backend communication
+google-generativeai         # Google Gemini API
+PyMuPDF                     # PDF text extraction (alternative: pdfplumber)
+pdfplumber                  # Another option for extracting text from PDFs
+python-dotenv               # To load environment variables (API keys)
+requests                    # For making API requests
