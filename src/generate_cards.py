@@ -4,7 +4,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")  # Replace with your actual key
+genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")  # Replace with your actual API key
 
 # 📂 Base directory containing grade folders
 BASE_PDF_DIR = "/Users/lakshiitakalyanasundaram/Desktop/Machine Learning/Flash Card generator/PDFS"
@@ -22,7 +22,6 @@ def generate_flashcards(text, num_cards):
     model = genai.GenerativeModel("gemini-2.0-flash-lite")
     
     prompt = f"Generate {num_cards} flashcards in question-answer format. Provide each flashcard as 'Q: <question> | A: <answer>'. Do not add numbering or extra text.\n{text}"
-
     response = model.generate_content(prompt)
 
     if response and response.text:
@@ -42,12 +41,31 @@ def generate_flashcards(text, num_cards):
 st.title("📚 AI Flashcard Generator")
 
 # 📌 Select Grade
-grade = st.text_input("Enter your grade (e.g., 9):").strip()
+grade = st.text_input("Enter your grade (e.g., 9, 10):").strip()
 
-# 🧪 Select Subject
-subjects = {"1": "Biology", "2": "Chemistry"}
-subject_choice = st.selectbox("Select a subject:", list(subjects.keys()), format_func=lambda x: subjects[x])
-subject = subjects[subject_choice]
+# ✅ Different subject lists based on grade
+default_subjects = {
+    "1": "Biology", "2": "Chemistry", "3": "Maths", 
+    "4": "History", "5": "Civics", "6": "Economics"
+}  # ❌ Removed Geography & Physics
+
+grade_10_subjects = {}
+
+# 📌 Fetch subjects dynamically for Grade 10
+if grade:
+    grade_path = os.path.join(BASE_PDF_DIR, grade)
+    if os.path.exists(grade_path):
+        if grade == "10":
+            grade_10_subjects = grade_10_subjects = {str(i + 1): sub for i, sub in enumerate(sorted(os.listdir(grade_path))) if sub != ".DS_Store"}
+
+
+# 🎯 Separate dropdowns for Grade 10 vs. Others
+if grade == "10":
+    subject_choice = st.selectbox("Select a subject:", list(grade_10_subjects.keys()), format_func=lambda x: grade_10_subjects[x])
+    subject = grade_10_subjects[subject_choice]
+else:
+    subject_choice = st.selectbox("Select a subject:", list(default_subjects.keys()), format_func=lambda x: default_subjects[x])
+    subject = default_subjects[subject_choice]
 
 # 📖 Enter Chapter Number
 chapter_number = st.text_input(f"Enter the chapter number for {subject} (e.g., 1):").strip()
@@ -57,13 +75,13 @@ if grade and subject and chapter_number:
     pdf_filename = f"{chapter_number}.pdf"
     pdf_path = os.path.join(BASE_PDF_DIR, grade, subject, pdf_filename)
 
-    # 🔥 Debugging: Print available files
+    print(f"Checking for file: {pdf_path}")
+
     if not os.path.exists(pdf_path):
         available_files = os.listdir(os.path.join(BASE_PDF_DIR, grade, subject)) if os.path.exists(os.path.join(BASE_PDF_DIR, grade, subject)) else []
-        st.error(f"❌ No file found for {subject}, Grade {grade}, Chapter {chapter_number}!\nAvailable files: {available_files}")
+        st.error(f"❌ No file found for {subject}, Grade {grade}, Chapter {chapter_number}!\n📂 Available files: {available_files}")
         st.stop()
 
-    # 📂 Extract text from PDF
     extracted_text = extract_text_from_pdf(pdf_path)
 
     # 🔢 Enter number of flashcards
@@ -72,8 +90,6 @@ if grade and subject and chapter_number:
     # 📝 Generate Flashcards
     if st.button("Generate Flashcards"):
         flashcards = generate_flashcards(extracted_text, num_cards)
-        
-        # Include intro message as the first card
         flashcards.insert(0, "Here are your flashcards based on the text in question-answer format.")
         
         st.session_state.flashcards = flashcards
@@ -84,11 +100,10 @@ if "flashcards" in st.session_state and st.session_state.flashcards:
     flashcards = st.session_state.flashcards
     index = st.session_state.index
 
-    # 📌 Show Current Flashcard in a Bigger Box
     with st.container():
         st.markdown(
             f"""
-            <div style="padding: 20px; border: 2px solid #4CAF50; border-radius: 10px; background-color: ##3a3f36; text-align: center; font-size: 18px;">
+            <div style="padding: 20px; border: 2px solid #4CAF50; border-radius: 10px; background-color: #3a3f36; text-align: center; font-size: 18px; color: white;">
                 <strong>Flashcard {index}/{len(flashcards) - 1}</strong>
                 <hr>
                 <p>{flashcards[index]}</p>
@@ -97,7 +112,6 @@ if "flashcards" in st.session_state and st.session_state.flashcards:
             unsafe_allow_html=True,
         )
     
-    # ⬅️ ➡️ Navigation Buttons
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col1:
