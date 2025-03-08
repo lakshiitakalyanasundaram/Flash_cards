@@ -2,7 +2,7 @@ import fitz  # PyMuPDF for PDF text extraction
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY")
+genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")
 
 def extract_text_from_pdf(pdf_path):
     text = ""

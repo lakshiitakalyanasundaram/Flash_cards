@@ -7,7 +7,7 @@ import traceback
 
 FLASHCARD_API_KEY = "6397b0ee5e7d0c5b9b10547b6d75ea1bae5b4e8a982354ab369c5c4613654d07"
 # Configure Gemini API
-api_key = "AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY"  # Replace with your actual key
+api_key = "apikey"  # Replace with your actual key
 genai.configure(api_key=api_key)
 
 app = Flask(__name__)

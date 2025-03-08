@@ -4,7 +4,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY")  # Replace with your actual key
+genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")  # Replace with your actual key
 
 # 📂 Base directory containing grade folders
 BASE_PDF_DIR = "/Users/lakshiitakalyanasundaram/Desktop/Machine Learning/Flash Card generator/PDFS"
@@ -22,6 +22,7 @@ def generate_flashcards(text, num_cards):
     model = genai.GenerativeModel("gemini-2.0-flash-lite")
     
     prompt = f"Generate {num_cards} flashcards in question-answer format. Provide each flashcard as 'Q: <question> | A: <answer>'. Do not add numbering or extra text.\n{text}"
+
     response = model.generate_content(prompt)
 
     if response and response.text:
