@@ -3,7 +3,9 @@ from flask_cors import CORS
 import os
 import fitz  # PyMuPDF for PDF text extraction
 import google.generativeai as genai
+import traceback 
 
+FLASHCARD_API_KEY = "6397b0ee5e7d0c5b9b10547b6d75ea1bae5b4e8a982354ab369c5c4613654d07"
 # Configure Gemini API
 api_key = "AIzaSyB2rIWI3_fvZe1OxHmlc7Bqf2_l_zJ0fpY"  # Replace with your actual key
 genai.configure(api_key=api_key)
@@ -32,12 +34,19 @@ def generate_flashcards(text):
 @app.route('/generate_flashcards', methods=['POST'])
 def generate_flashcards_route():
     try:
-        data = request.get_json()  # Get JSON data from the frontend
+        data = request.get_json()
+        
+        print("🔹 Received Data:", data)  # Debugging print
+        
+        if not data:
+            return jsonify({"error": "Missing request body"}), 400
+        
+        grade = data.get('grade')
+        subject = data.get('subject')
+        chapter_number = data.get('chapter_number')
 
-        # Extract data from the received JSON
-        grade = data['grade']
-        subject = data['subject']
-        chapter_number = data['chapter_number']
+        if not grade or not subject or not chapter_number:
+            return jsonify({"error": "Missing required fields (grade, subject, chapter_number)"}), 400
 
         # Map subjects to folder names
         subjects = {"1": "Biology", "2": "Chemistry"}
@@ -56,15 +65,16 @@ def generate_flashcards_route():
         # Extract text from the PDF
         extracted_text = extract_text_from_pdf(pdf_path)
 
-        # Generate flashcards using LLM (from Google Generative AI)
+        # Generate flashcards using LLM
         flashcards = generate_flashcards(extracted_text)
 
-        # Return the flashcards as a response
-        return jsonify({"flashcards": flashcards})  # Return flashcards in JSON format
+        # Return the flashcards
+        return jsonify({"flashcards": flashcards})
 
     except Exception as e:
-        return jsonify({"error": "An unexpected error occurred."}), 500
-
+        print("❌ ERROR:", str(e))
+        print(traceback.format_exc())  # Print full error details
+        return jsonify({"error": "An unexpected error occurred.", "details": str(e)}), 500
 # Home route
 @app.route('/')
 def home():
@@ -72,4 +82,4 @@ def home():
 
 # Run the Flask app
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True) 
