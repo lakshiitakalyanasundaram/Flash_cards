@@ -4,3 +4,4 @@ API_KEY.txt
 *.log
 venv
 .DS_Store
+.vercel
