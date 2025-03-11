@@ -1,6 +1,5 @@
 import os
 import fitz  # PyMuPDF for PDF text extraction
-import streamlit as st
 import google.generativeai as genai
 
 # Configure Gemini API
@@ -10,114 +9,73 @@ genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")  # Replace wi
 BASE_PDF_DIR = "/Users/lakshiitakalyanasundaram/Desktop/Machine Learning/Flash Card generator/PDFS"
 
 # 🎯 Function to extract text from a PDF
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(pdf_path, chapter_number):
     text = ""
     with fitz.open(pdf_path) as doc:
         for page in doc:
-            text += page.get_text()
-    return text
+            if f"Chapter {chapter_number}" in page.get_text():  # Basic filtering for chapter text
+                text += page.get_text()
+    return text if text else None
 
 # 🤖 Function to generate flashcards
 def generate_flashcards(text, num_cards):
-    model = genai.GenerativeModel("gemini-2.0-flash-lite")
+    model = genai.GenerativeModel("gemini-1.5-flash")
     
     prompt = f"Generate {num_cards} flashcards in question-answer format. Provide each flashcard as 'Q: <question> | A: <answer>'. Do not add numbering or extra text.\n{text}"
     response = model.generate_content(prompt)
 
     if response and response.text:
         flashcards = [card.strip() for card in response.text.split("\n") if card.strip()]
-        qa_flashcards = []
+        qa_flashcards = [card for card in flashcards if "Q:" in card and "A:" in card]
         
-        for card in flashcards:
-            if "Q:" in card and "A:" in card:
-                qa_flashcards.append(card)
-                if len(qa_flashcards) == num_cards:
-                    break
-        
-        return qa_flashcards
+        return qa_flashcards[:num_cards] if qa_flashcards else ["⚠️ No flashcards could be generated!"]
     return ["⚠️ No flashcards could be generated!"]
 
-# 🚀 Streamlit UI
-st.title("📚 AI Flashcard Generator")
+# 🏗️ Main function to handle user input
+def main():
+    print("\n📚 Flashcard Generator CLI 📚\n")
 
-# 📌 Select Grade
-grade = st.text_input("Enter your grade (e.g., 9, 10):").strip()
-
-# ✅ Different subject lists based on grade
-default_subjects = {
-    "1": "Biology", "2": "Chemistry", "3": "Maths", 
-    "4": "History", "5": "Civics", "6": "Economics"
-}  # ❌ Removed Geography & Physics
-
-grade_10_subjects = {}
-
-# 📌 Fetch subjects dynamically for Grade 10
-if grade:
-    grade_path = os.path.join(BASE_PDF_DIR, grade)
-    if os.path.exists(grade_path):
-        if grade == "10":
-            grade_10_subjects = grade_10_subjects = {str(i + 1): sub for i, sub in enumerate(sorted(os.listdir(grade_path))) if sub != ".DS_Store"}
-
-
-# 🎯 Separate dropdowns for Grade 10 vs. Others
-if grade == "10":
-    subject_choice = st.selectbox("Select a subject:", list(grade_10_subjects.keys()), format_func=lambda x: grade_10_subjects[x])
-    subject = grade_10_subjects[subject_choice]
-else:
-    subject_choice = st.selectbox("Select a subject:", list(default_subjects.keys()), format_func=lambda x: default_subjects[x])
-    subject = default_subjects[subject_choice]
-
-# 📖 Enter Chapter Number
-chapter_number = st.text_input(f"Enter the chapter number for {subject} (e.g., 1):").strip()
-
-# 🔍 Check if file exists
-if grade and subject and chapter_number:
-    pdf_filename = f"{chapter_number}.pdf"
-    pdf_path = os.path.join(BASE_PDF_DIR, grade, subject, pdf_filename)
-
-    print(f"Checking for file: {pdf_path}")
-
-    if not os.path.exists(pdf_path):
-        available_files = os.listdir(os.path.join(BASE_PDF_DIR, grade, subject)) if os.path.exists(os.path.join(BASE_PDF_DIR, grade, subject)) else []
-        st.error(f"❌ No file found for {subject}, Grade {grade}, Chapter {chapter_number}!\n📂 Available files: {available_files}")
-        st.stop()
-
-    extracted_text = extract_text_from_pdf(pdf_path)
-
-    # 🔢 Enter number of flashcards
-    num_cards = st.number_input("Enter number of flashcards:", min_value=1, value=5, step=1)
-
-    # 📝 Generate Flashcards
-    if st.button("Generate Flashcards"):
-        flashcards = generate_flashcards(extracted_text, num_cards)
-        flashcards.insert(0, "Here are your flashcards based on the text in question-answer format.")
-        
-        st.session_state.flashcards = flashcards
-        st.session_state.index = 0
-
-# 🎴 Flashcard Navigation
-if "flashcards" in st.session_state and st.session_state.flashcards:
-    flashcards = st.session_state.flashcards
-    index = st.session_state.index
-
-    with st.container():
-        st.markdown(
-            f"""
-            <div style="padding: 20px; border: 2px solid #4CAF50; border-radius: 10px; background-color: #3a3f36; text-align: center; font-size: 18px; color: white;">
-                <strong>Flashcard {index}/{len(flashcards) - 1}</strong>
-                <hr>
-                <p>{flashcards[index]}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    # 1️⃣ Select Grade
+    grades = sorted(os.listdir(BASE_PDF_DIR))
+    print("Select your grade:")
+    for i, grade in enumerate(grades, 1):
+        print(f"{i}. {grade}")
     
-    col1, col2, col3 = st.columns([1, 2, 1])
+    grade_choice = int(input("Enter the number of your grade: ")) - 1
+    selected_grade = grades[grade_choice]
 
-    with col1:
-        if st.button("⬅️ Previous") and index > 0:
-            st.session_state.index -= 1
+    # 2️⃣ Select Subject
+    subject_dir = os.path.join(BASE_PDF_DIR, selected_grade)
+    subjects = sorted(os.listdir(subject_dir))
+    print("\nSelect your subject:")
+    for i, subject in enumerate(subjects, 1):
+        print(f"{i}. {subject}")
+    
+    subject_choice = int(input("Enter the number of your subject: ")) - 1
+    selected_subject = subjects[subject_choice]
 
-    with col3:
-        if st.button("➡️ Next") and index < len(flashcards) - 1:
-            st.session_state.index += 1
+    # 3️⃣ Get Chapter Number
+    chapter_number = input("\nEnter the chapter number: ")
+
+    # 4️⃣ Get Number of Flashcards
+    num_cards = int(input("Enter the number of flashcards to generate: "))
+
+    # 5️⃣ Extract Text from PDF
+    pdf_path = os.path.join(subject_dir, selected_subject)
+    extracted_text = extract_text_from_pdf(pdf_path, chapter_number)
+
+    if not extracted_text:
+        print("⚠️ Could not find text for the specified chapter. Please check your input.")
+        return
+
+    # 6️⃣ Generate Flashcards
+    flashcards = generate_flashcards(extracted_text, num_cards)
+
+    # 7️⃣ Display Flashcards
+    print("\n🎴 Generated Flashcards:\n")
+    for i, card in enumerate(flashcards, 1):
+        print(f"🔹 {card}")
+
+# 🚀 Run the script
+if __name__ == "__main__":
+    main()
