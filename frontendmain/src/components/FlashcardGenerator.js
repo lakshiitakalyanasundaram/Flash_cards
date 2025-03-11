@@ -91,23 +91,24 @@ const FlashcardGenerator = () => {
             </div>
 
             {/* Swipe Controls */}
-            <div className="controls">
-    <button 
-        onClick={() => handleSwipe("right")} 
-        disabled={currentIndex === 0} 
-        className="nav-btn"
-    >
-        ◀
-    </button>
-    <button 
-        onClick={() => handleSwipe("left")} 
-        disabled={currentIndex === flashcards.length - 1} 
-        className="nav-btn"
-    >
-        ▶
-    </button>
-</div>
-
+            {flashcards && flashcards.length > 0 && (
+    <div className="controls">
+        <button 
+            onClick={() => handleSwipe("right")} 
+            disabled={currentIndex === 0} 
+            className="nav-btn"
+        >
+            ◀
+        </button>
+        <button 
+            onClick={() => handleSwipe("left")} 
+            disabled={currentIndex === flashcards.length - 1} 
+            className="nav-btn"
+        >
+            ▶
+        </button>
+    </div>
+)}
         </div>
     );
 };
