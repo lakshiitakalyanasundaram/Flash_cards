@@ -55,8 +55,9 @@ const FlashcardGenerator = () => {
     };
 
     return (
+        <div class="flashcard-wrapper">
         <div className="container">
-            <h2>Flashcard Generator</h2>
+            <h2>EduFlip</h2>
             
             {/* Input Fields Container */}
             <div className="input-container">
@@ -109,6 +110,7 @@ const FlashcardGenerator = () => {
         </button>
     </div>
 )}
+        </div>
         </div>
     );
 };

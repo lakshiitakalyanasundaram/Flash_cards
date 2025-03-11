@@ -1,25 +1,40 @@
-/* Center ALL elements vertically & horizontally */
 body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e2daf2; /* Optional background */
 }
 
-/* Force heading to center */
+/* Main container */
+.flashcard-wrapper {
+    width: 90%; /* Make it responsive */
+    max-width: 450px; /* Prevents excessive stretching */
+    padding: 25px;
+    border: 2px solid #ffffffd5;
+    border-radius: 15px;
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Keep heading centered and sticky */
 h2 {
     text-align: center;
-    width: 400px !important; /* Force header width to match cards */
-    left: calc(50% - 200px) !important;
-    margin: 30px 0 20px 0;
-    position: sticky;
-    top: 0;
-    background: #ffffff;
-    padding: 10px 0;
-    z-index: 1000;
+    width: 100%;
+    margin: 0 0 30px 0;
+    background: #f2d9de;
+    color:#2c3e50;
+    padding: 15px 0;
+    border-radius: 12px 12px 12px 12px;
 }
+
+
 
 /* Main container alignment */
 .flashcard-container {
@@ -30,6 +45,7 @@ h2 {
     padding-top: 100px !important;
     width: 100% !important;
     max-width: 400px !important;
+    background-color: #e2daf2;
 }
 
 /* NEW: Flashcard wrapper for perfect centering */
@@ -41,7 +57,10 @@ h2 {
 
 /* Input container - center horizontally */
 .input-container {
-    background: white;
+    /* Your existing styles */
+    width: 100%;
+    max-width: 400px;
+    background: #fce2d4;
     padding: 20px;
     border-radius: 15px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -49,10 +68,12 @@ h2 {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    width: 100% !important;
-    max-width: 380px !important;
-    margin: 15px auto !important;
-    margin-top: 40px
+    
+    /* Add these 2 lines */
+    margin: 0 auto 0 10%; /* 👈 Left shift */
+    transform: translateX(-5%); /* Fine-tune positioning */
+    position: relative;
+    left: -35px;
 }
 
 /* Flashcards container - center content */
@@ -78,7 +99,7 @@ h2 {
     position: relative;
     left: 0;
     transform: translateX(0);
-    left: 10px;
+    left: -1px;
     margin-top: 30px
 }
 
@@ -119,13 +140,13 @@ h2 {
 }
 
 .flashcard-front {
-    background-color: white;
+    background-color: #def2d9;
     color: black;
 }
 
 .flashcard-back {
-    background-color: #3d72c9;
-    color: white;
+    background-color: 	#d9ebf2;
+    color: #2c3e50;
     transform: rotateY(180deg);
 }
 
@@ -146,8 +167,8 @@ h2 {
     height: 50px;
     border: none;
     border-radius: 50%;
-    background-color: #3c6da1d5;
-    color: white;
+    background-color: #f2d9de;
+    color: rgb(255, 255, 255);
     font-size: 24px;
     display: flex;
     align-items: center;
@@ -155,11 +176,13 @@ h2 {
     cursor: pointer;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     transition: background 0.3s, transform 0.2s;
-    margin-top: 10px
+    /* Adjust this value as needed */
+    
+    
 }
 
 .nav-btn:hover {
-    background-color: #3c6da1d5;
+    background-color: #6a6c6dd5;
     transform: scale(1.1);
 }
 
