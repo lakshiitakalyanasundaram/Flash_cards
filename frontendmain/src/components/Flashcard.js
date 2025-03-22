@@ -13,31 +13,32 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
-    setLoading(true);
-    try {
-      const requestData = {
-        grade: grade.trim(),  // Convert to string
-        subject: subject.trim(),  // Convert to string
-        chapter: chapter.trim(),  // Convert to string
-        num_flashcards: Number(numCards)  // Convert to integer
+  setLoading(true);
+  try {
+    const requestData = {
+      grade: grade.toString(),
+      subject: subject.toString(),
+      chapter: chapter.toString(),
+      num_flashcards: Number(numCards)
       };
-  
-      console.log("📤 Sending request:", requestData);  // Debugging
-  
-      const response = await axios.post(
-        "http://127.0.0.1:8000/generate_flashcards",
-        requestData,
-        { headers: { "Content-Type": "application/json" } }  // Ensure JSON format
-      );
-  
-      console.log("✅ API Response:", response.data);
-      setFlashcards(response.data);
-    } catch (error) {
-      console.error("❌ Error generating flashcards:", error.response ? error.response.data : error);
-    }
-    setLoading(false);
-  };
-  
+    
+
+    console.log("📤 Sending request:", requestData);  // Debugging
+
+    const response = await axios.post(
+      "http://127.0.0.1:8000/generate_flashcards",
+      requestData,
+      { headers: { "Content-Type": "application/json" } }  // Ensure JSON format
+    );
+
+    console.log("✅ API Response:", response.data);
+    setFlashcards(response.data);
+  } catch (error) {
+    console.error("❌ Error generating flashcards:", error.response ? error.response.data : error);
+  }
+  setLoading(false);
+};
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
       <motion.div

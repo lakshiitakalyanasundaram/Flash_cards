@@ -1,27 +1,17 @@
 import os
-import fitz  # PyMuPDF for PDF text extraction
 import google.generativeai as genai
+from extract_text import extract_text_from_pdf
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyBmjdUQT62OK8qQs5g_nB3jFg88ddqbEqs")  # Replace with your actual API key
+genai.configure(api_key="AIzaSyB3juaGqWCd2Xqj7o4k4SuQ-jtp3BIj-oI")  # Replace with your actual API key
 
-# 📂 Base directory containing grade folders
 BASE_PDF_DIR = "/Users/lakshiitakalyanasundaram/Desktop/Machine Learning/Flash Card generator/PDFS"
 
-# 🎯 Function to extract text from a PDF
-def extract_text_from_pdf(pdf_path, chapter_number):
-    text = ""
-    with fitz.open(pdf_path) as doc:
-        for page in doc:
-            if f"Chapter {chapter_number}" in page.get_text():  # Basic filtering for chapter text
-                text += page.get_text()
-    return text if text else None
-
-# 🤖 Function to generate flashcards
+# 🤖 Generate flashcards using Gemini API
 def generate_flashcards(text, num_cards):
     model = genai.GenerativeModel("gemini-1.5-flash")
     
-    prompt = f"Generate {num_cards} flashcards in question-answer format. Provide each flashcard as 'Q: <question> | A: <answer>'. Do not add numbering or extra text.\n{text}"
+    prompt = f"Generate {num_cards} flashcards in question-answer format. Provide each flashcard as 'Q: <question> | A: <answer>'.\n{text}"
     response = model.generate_content(prompt)
 
     if response and response.text:
@@ -31,7 +21,7 @@ def generate_flashcards(text, num_cards):
         return qa_flashcards[:num_cards] if qa_flashcards else ["⚠️ No flashcards could be generated!"]
     return ["⚠️ No flashcards could be generated!"]
 
-# 🏗️ Main function to handle user input
+# 🏗️ Main function
 def main():
     print("\n📚 Flashcard Generator CLI 📚\n")
 
@@ -60,9 +50,8 @@ def main():
     # 4️⃣ Get Number of Flashcards
     num_cards = int(input("Enter the number of flashcards to generate: "))
 
-    # 5️⃣ Extract Text from PDF
-    pdf_path = os.path.join(subject_dir, selected_subject)
-    extracted_text = extract_text_from_pdf(pdf_path, chapter_number)
+    # 5️⃣ Extract Text using extract_text.py ✅
+    extracted_text = extract_text_from_pdf(selected_grade, selected_subject, chapter_number)
 
     if not extracted_text:
         print("⚠️ Could not find text for the specified chapter. Please check your input.")
